@@ -1,0 +1,108 @@
+#include <stdio.h>
+
+int main()
+{
+    int n,i,time=0,completed=0;
+    int at[20],bt[20],rt[20],pr[20];
+    int wt[20]={0},tat[20];
+    int min_pr,process;
+    int gantt[100];
+
+    float total_wt=0,total_tat=0;
+
+    printf("Enter number of processes: ");
+    scanf("%d",&n);
+
+    for(i=0;i<n;i++)
+    {
+        printf("\nProcess P%d\n",i+1);
+
+        printf("Arrival Time: ");
+        scanf("%d",&at[i]);
+
+        printf("Burst Time: ");
+        scanf("%d",&bt[i]);
+
+        printf("Priority (smaller number = higher priority): ");
+        scanf("%d",&pr[i]);
+
+        rt[i]=bt[i];
+    }
+
+    while(completed!=n)
+    {
+        min_pr=9999;
+        process=-1;
+
+        for(i=0;i<n;i++)
+        {
+            if(at[i]<=time && rt[i]>0 && pr[i]<min_pr)
+            {
+                min_pr=pr[i];
+                process=i;
+            }
+        }
+
+        if(process==-1)
+        {
+            gantt[time] = -1;
+            time++;
+            continue;
+        }
+
+        gantt[time] = process;
+
+        rt[process]--;
+
+        if(rt[process]==0)
+        {
+            completed++;
+
+            int finish=time+1;
+
+            wt[process] = finish - bt[process] - at[process];
+
+            if(wt[process]<0)
+            wt[process]=0;
+        }
+
+        time++;
+    }
+
+    for(i=0;i<n;i++)
+    {
+        tat[i]=bt[i]+wt[i];
+
+        total_wt+=wt[i];
+        total_tat+=tat[i];
+    }
+
+    printf("\nProcess\tAT\tBT\tPR\tWT\tTAT\n");
+
+    for(i=0;i<n;i++)
+    {
+        printf("P%d\t%d\t%d\t%d\t%d\t%d\n",i+1,at[i],bt[i],pr[i],wt[i],tat[i]);
+    }
+
+    printf("\nAverage Waiting Time = %.2f",total_wt/n);
+    printf("\nAverage Turnaround Time = %.2f\n",total_tat/n);
+
+    printf("\nGantt Chart:\n|");
+
+    for(i=0;i<time;i++)
+    {
+        if(gantt[i]==-1)
+        printf(" Idle |");
+        else
+        printf(" P%d |",gantt[i]+1);
+    }
+
+    printf("\n0");
+
+    for(i=1;i<=time;i++)
+    printf("\t%d",i);
+
+    printf("\n");
+
+    return 0;
+}
